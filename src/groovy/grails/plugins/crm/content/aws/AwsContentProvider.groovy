@@ -63,7 +63,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata).withCannedAcl(CannedAccessControlList.PublicRead))
+        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
 
         parseMetadata(key, result.metadata)
     }
@@ -76,7 +76,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata).withCannedAcl(CannedAccessControlList.PublicRead))
+        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
 
         parseMetadata(key, result.metadata)
     }
@@ -132,7 +132,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(object.objectMetadata.contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), toKey, inputStream, metadata).withCannedAcl(CannedAccessControlList.PublicRead))
+        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), toKey, inputStream, metadata))
 
         return true
     }
