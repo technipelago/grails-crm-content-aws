@@ -15,7 +15,7 @@
  */
 
 class CrmContentAwsGrailsPlugin {
-    def version = "2.4.0-SNAPSHOT"
+    def version = "2.4.0"
     def grailsVersion = "2.4 > *"
     def pluginExcludes = [
                 "src/groovy/grails/plugins/crm/content/aws/TestSecurityDelegate.groovy",
