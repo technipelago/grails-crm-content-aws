@@ -82,21 +82,62 @@ Currently all GR8 CRM content are stored in the same bucket, configured with:
 
     crm.content.s3.bucket = '<bucket name>' // default 'grails'
 
+== Extensions
+
+You can write business logic that decides what content provider to use.
+You do this by replacing the bean named `crmContentRouter` with an implementation
+that can use content name, content length, domain instance that the content is attached to, or the current user to
+decide what content provider to route to.
+
+The following example route all images to Amazon S3 and all other content
+to the default `crmFileContentProvider` that store files in the local file system.
+
+[source,groovy]
+.src/groovy/my/package/ImageContentRouter.groovy
+----
+
+import grails.plugins.crm.content.CrmContentProvider
+import grails.plugins.crm.content.CrmContentRouter
+
+/**
+ * Route all images to Amazon S3.
+ */
+class ImageContentRouter implements CrmContentRouter {
+
+    def crmFileContentProvider
+    def awsContentProvider
+
+    @Override
+    CrmContentProvider getProvider(String filename, long length, Object reference, String username) {
+        isImage(filename) ? awsContentProvider : crmFileContentProvider
+    }
+
+    private boolean isImage(String filename) {
+        for (ext in [".png", ".jpg", ".jpeg", ".gif"]) {
+            if (filename.toLowerCase().endsWith(ext)) {
+                return true
+            }
+        }
+        return false
+    }
+}
+----
+
+[source,groovy]
+.grails-app/conf/spring/resources.groovy
+----
+beans = {
+    crmContentRouter(my.package.ImageContentRouter) { bean ->
+        bean.autowire = 'byName'
+    }
+}
+----
+
 == Changes
 
+2.4.1:: Support for multiple content providers in the same application (requires crm-content plugin version 2.4.5)
 2.4.0:: First public release
 
-== Roadmap
-
-The current (2.4.0) implementation overrides the default `ContentProviderFactory` with
-`AwsContentProviderFactory` that always returns an `AwsContentProvider` instance.
-This means that *all* content in the same Grails application will be stored in Amazon S3.
-It would be nice to be able to store some content in S3, some in local file system and
-(in the future) some content elsewhere depending on business logic.
-
-Some kind of generic `ContentProviderFactory` is needed that knows about all
-`ContentProvider` implementations avaiable in the application. Then business logic
-would assign a content provider that is most suitable for the type of content read/written.
 
 == License
 
