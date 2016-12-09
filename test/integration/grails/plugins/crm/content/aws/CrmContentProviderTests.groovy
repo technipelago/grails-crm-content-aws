@@ -56,15 +56,12 @@ class CrmContentProviderTests extends GroovyTestCase {
         assert crmContentService.getContentByPath("/hello/hello.txt") == null
         assert crmContentService.cleanup() == 12 // "Hello World!"
 
-        def providers = crmContentProviderFactory.getProviders()
-        assert providers.size() > 0
-        for (p in providers) {
-            assert p.check({ true }) == 5 // "Test!"
-        }
+        def provider = crmContentProviderFactory.getProvider(URI.create("s3://1234567890"))
+        assert provider != null
+        assert provider.check({ true }) == 5 // "Test!"
 
         crmContentService.deleteFolder(folder)
-        for (p in providers) {
-            assert p.check({ true }) == 0 // Should be zero if all test files are removed
-        }
+
+        assert provider.check({ true }) == 0 // Should be zero if all test files are removed
     }
 }

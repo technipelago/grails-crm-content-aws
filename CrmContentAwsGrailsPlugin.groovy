@@ -15,7 +15,7 @@
  */
 
 class CrmContentAwsGrailsPlugin {
-    def version = "2.4.0"
+    def version = "2.4.1-SNAPSHOT"
     def grailsVersion = "2.4 > *"
     def pluginExcludes = [
                 "src/groovy/grails/plugins/crm/content/aws/TestSecurityDelegate.groovy",
@@ -36,11 +36,9 @@ Provide storage of GR8 CRM content in Amazon S3 buckets.
     def scm = [url: "https://github.com/technipelago/grails-crm-content-aws"]
 
     def doWithSpring = {
-        def cp = awsContentProvider(grails.plugins.crm.content.aws.AwsContentProvider) { bean ->
+        awsContentProvider(grails.plugins.crm.content.aws.AwsContentProvider) { bean ->
             bean.autowire = 'byName'
-        }
-        crmContentProviderFactory(grails.plugins.crm.content.aws.AwsContentProviderFactory) {
-            crmContentProvider = cp
+            bean.primary = true // To make DefaultContentRouter select this provider before the local file system provider.
         }
     }
 }

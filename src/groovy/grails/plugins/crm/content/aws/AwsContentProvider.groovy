@@ -19,6 +19,7 @@ package grails.plugins.crm.content.aws
 import com.amazonaws.services.s3.model.*
 import grails.plugins.crm.content.CrmContentProvider
 import grails.plugins.crm.core.WebUtils
+import groovy.transform.CompileStatic
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
 
@@ -31,6 +32,12 @@ class AwsContentProvider implements CrmContentProvider {
 
     def amazonWebService
     def grailsApplication
+
+    @CompileStatic
+    @Override
+    boolean handles(URI resourceURI) {
+        resourceURI.scheme == scheme
+    }
 
     private String getBucketName() {
         grailsApplication.config.crm.content.s3.bucket ?: 'grails'
