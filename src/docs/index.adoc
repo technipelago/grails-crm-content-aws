@@ -86,6 +86,18 @@ Currently all GR8 CRM content are stored in the same bucket, configured with:
 
 2.4.0:: First public release
 
+== Roadmap
+
+The current (2.4.0) implementation overrides the default `ContentProviderFactory` with
+`AwsContentProviderFactory` that always returns an `AwsContentProvider` instance.
+This means that *all* content in the same Grails application will be stored in Amazon S3.
+It would be nice to be able to store some content in S3, some in local file system and
+(in the future) some content elsewhere depending on business logic.
+
+Some kind of generic `ContentProviderFactory` is needed that knows about all
+`ContentProvider` implementations avaiable in the application. Then business logic
+would assign a content provider that is most suitable for the type of content read/written.
+
 == License
 
 {license}
