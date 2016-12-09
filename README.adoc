@@ -15,3 +15,8 @@ to communicate with Amazon S3, so all configuration options for *aws-sdk* apply.
 Currently all GR8 CRM content are stored in the same bucket, configured with:
 
     crm.content.s3.bucket = '<bucket name>' // default 'grails'
+
+
+### Documentation
+
+Complete documentation for this plugin can be found at http://gr8crm.github.io/plugins/crm-content-aws/[gr8crm.github.io]
