@@ -41,7 +41,7 @@ grails.project.dependency.resolution = {
 
         compile "org.grails.plugins:aws-sdk:1.11.11"
 
-        compile ":crm-content:2.4.5-SNAPSHOT"
+        compile ":crm-content:2.4.5"
     }
 }
 
