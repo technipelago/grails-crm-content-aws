@@ -38,7 +38,7 @@ instead of in the local server file system.
 This plugin is quite thin thanks to two great plugins, https://grails.org/plugin/aws-sdk[aws-sdk],
 and https://github.com/technipelago/grails-crm-content[crm-content].
 The AWS plugin makes it easy to store objects in Amazon S3 and the crm-content plugin has
-support for "content providers". So this plugin just adds the `AwsContentProvder`
+support for "storage providers". So this plugin just adds the `AwsContentProvider`
 implementation that leverages *aws-sdk* for object storage. All standard GR8 CRM content
 management features works the same was as the default implementation that stores object
 in local file system.
