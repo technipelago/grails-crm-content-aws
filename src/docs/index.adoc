@@ -86,8 +86,8 @@ Currently all GR8 CRM content are stored in the same bucket, configured with:
 
 You can write business logic that decides what content provider to use.
 You do this by replacing the bean named `crmContentRouter` with an implementation
-that can use content name, content length, domain instance that the content is attached to, or the current user to
-decide what content provider to route to.
+that can use *content name*, *content length*, *domain instance* that the content is attached to,
+or the *current user* to decide what content provider to route to.
 
 The following example route all images to Amazon S3 and all other content
 to the default `crmFileContentProvider` that store files in the local file system.
@@ -95,6 +95,7 @@ to the default `crmFileContentProvider` that store files in the local file syste
 [source,groovy]
 .src/groovy/my/package/ImageContentRouter.groovy
 ----
+package my.package
 
 import grails.plugins.crm.content.CrmContentProvider
 import grails.plugins.crm.content.CrmContentRouter
