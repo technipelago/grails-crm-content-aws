@@ -16,6 +16,7 @@
 
 package grails.plugins.crm.content.aws
 
+import grails.plugins.crm.content.CrmResourceRef
 import spock.lang.Specification
 
 /**
@@ -28,11 +29,25 @@ class AwsContentSpec extends Specification {
     def "create file"() {
         when:
         def folder = crmContentService.createFolder(null, "test", "Test folder")
-        def content = crmContentService.createResource("Hello World!", "hello.txt", folder, [title: "A classic message"])
+        def contentWritten = crmContentService.createResource("Hello World!", "hello.txt", folder, [title: "A classic message"])
 
         then:
-        content.metadata.contentType == 'text/plain'
-        content.text == "Hello World!"
-        crmContentService.deleteReference(content)
+        contentWritten.metadata.contentType == 'text/plain'
+        contentWritten.text == "Hello World!"
+
+        when:
+        CrmResourceRef contentRead = crmContentService.getContentByPath("/test/hello.txt")
+
+        then:
+        contentRead != null
+        contentRead.getResource().scheme == 's3'
+        contentRead.name == contentWritten.name
+        contentRead.text == 'Hello World!'
+
+        when:
+        crmContentService.deleteReference(contentRead)
+
+        then:
+        crmContentService.getContentByPath("/test/hello.txt") == null
     }
 }
