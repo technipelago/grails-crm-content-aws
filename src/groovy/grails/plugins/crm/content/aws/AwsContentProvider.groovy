@@ -16,6 +16,7 @@
 
 package grails.plugins.crm.content.aws
 
+import com.amazonaws.services.s3.iterable.S3Objects
 import com.amazonaws.services.s3.model.*
 import grails.plugins.crm.content.CrmContentProvider
 import grails.plugins.crm.core.WebUtils
@@ -116,6 +117,7 @@ class AwsContentProvider implements CrmContentProvider {
             buf.flush()
         } finally {
             inputStream.close()
+            object.close()
         }
 
         return len
@@ -132,6 +134,7 @@ class AwsContentProvider implements CrmContentProvider {
             work.call(inputStream)
         } finally {
             inputStream.close()
+            object.close()
         }
     }
 
@@ -147,7 +150,12 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(object.objectMetadata.contentType)
 
-        final PutObjectResult result = putS3Object(toKey, inputStream, metadata)
+        try {
+            putS3Object(toKey, inputStream, metadata)
+        } finally {
+            inputStream.close()
+            object.close()
+        }
 
         return true
     }
@@ -166,7 +174,14 @@ class AwsContentProvider implements CrmContentProvider {
         final String key = uri.getHost()
         final S3Object object = getS3Object(key)
 
-        parseMetadata(key, object.objectMetadata)
+        Map<String, Object> result
+        try {
+            result = parseMetadata(key, object.objectMetadata)
+        } finally {
+            object.close()
+        }
+
+        result
     }
 
     @Override
@@ -174,7 +189,11 @@ class AwsContentProvider implements CrmContentProvider {
         final String key = uri.getHost()
         final S3Object object = getS3Object(key)
 
-        object.objectMetadata.contentLength
+        long length = object.objectMetadata.contentLength
+
+        object.close()
+
+        length
     }
 
     @Override
@@ -182,7 +201,11 @@ class AwsContentProvider implements CrmContentProvider {
         final String key = uri.getHost()
         final S3Object object = getS3Object(key)
 
-        object.objectMetadata.lastModified.time
+        long time = object.objectMetadata.lastModified.time
+
+        object.close()
+
+        time
     }
 
     @Override
