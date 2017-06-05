@@ -209,6 +209,12 @@ class AwsContentProvider implements CrmContentProvider {
     }
 
     @Override
+    boolean exists(URI uri) {
+        final String key = uri.getHost()
+        amazonWebService.s3.doesObjectExist(getBucketName(), key)
+    }
+
+    @Override
     long check(@ClosureParams(value = SimpleType.class, options = "java.net.URI") Closure<Boolean> worker) {
         long size = 0
         final ObjectListing objectListing = amazonWebService.s3.listObjects(getBucketName())
