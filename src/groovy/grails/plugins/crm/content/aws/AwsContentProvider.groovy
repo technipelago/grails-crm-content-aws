@@ -62,6 +62,14 @@ class AwsContentProvider implements CrmContentProvider {
         return md
     }
 
+    private S3Object getS3Object(String key) {
+        amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+    }
+
+    private PutObjectResult putS3Object(String key, InputStream content, ObjectMetadata metadata) {
+        amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
+    }
+
     @Override
     Map<String, Object> create(InputStream content, String contentType, String name, String principal) {
         String key = UUID.randomUUID().toString()
@@ -70,7 +78,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
+        final PutObjectResult result = putS3Object(key, content, metadata)
 
         parseMetadata(key, result.metadata)
     }
@@ -83,7 +91,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
+        final PutObjectResult result = putS3Object(key, content, metadata)
 
         parseMetadata(key, result.metadata)
     }
@@ -91,7 +99,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     Reader getReader(URI uri, String charsetName) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
         // NOTE Don't forget to close the reader! => objectData.close()
         new InputStreamReader(object.getObjectContent(), charsetName ?: 'UTF-8')
     }
@@ -99,7 +107,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     long read(OutputStream buf, URI uri) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
         final long len = object.objectMetadata.contentLength
         final InputStream inputStream = object.getObjectContent()
 
@@ -117,7 +125,7 @@ class AwsContentProvider implements CrmContentProvider {
     Object withInputStream(URI uri,
                            @ClosureParams(value = SimpleType.class, options = "java.io.InputStream") Closure work) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
         final InputStream inputStream = object.getObjectContent()
 
         try {
@@ -130,7 +138,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     boolean copy(URI from, URI to) {
         final String fromKey = from.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), fromKey))
+        final S3Object object = getS3Object(fromKey)
         final InputStream inputStream = object.getObjectContent()
 
         String toKey = to.getHost() // UUID.randomUUID().toString()
@@ -139,7 +147,7 @@ class AwsContentProvider implements CrmContentProvider {
         metadata.setUserMetadata(userMetadata)
         metadata.setContentType(object.objectMetadata.contentType)
 
-        final PutObjectResult result = amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), toKey, inputStream, metadata))
+        final PutObjectResult result = putS3Object(toKey, inputStream, metadata)
 
         return true
     }
@@ -156,7 +164,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     Map<String, Object> getMetadata(URI uri) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
 
         parseMetadata(key, object.objectMetadata)
     }
@@ -164,7 +172,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     long getLength(URI uri) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
 
         object.objectMetadata.contentLength
     }
@@ -172,7 +180,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     long getLastModified(URI uri) {
         final String key = uri.getHost()
-        final S3Object object = amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        final S3Object object = getS3Object(key)
 
         object.objectMetadata.lastModified.time
     }
