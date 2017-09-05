@@ -220,12 +220,11 @@ class AwsContentProvider implements CrmContentProvider {
      * @param c Closure to call for each object in the bucket
      */
     void withObjects(
-            @ClosureParams(value = SimpleType.class, options = "com.amazonaws.services.s3.model.S3ObjectSummary") Closure c) {
-        Closure work = c.clone()
-        work.delegate = amazonWebService.s3
-        work.resolveStrategy = Closure.DELEGATE_FIRST
+            @ClosureParams(value = SimpleType.class, options = "com.amazonaws.services.s3.model.S3ObjectSummary") Closure worker) {
         for (S3ObjectSummary summary in S3Objects.withPrefix(amazonWebService.s3, getBucketName(), null)) {
-            work(summary)
+            def clone = worker.rehydrate(amazonWebService.s3, this, this)
+            clone.resolveStrategy = Closure.DELEGATE_FIRST
+            clone.call(summary)
         }
     }
 
