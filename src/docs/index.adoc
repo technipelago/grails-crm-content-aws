@@ -136,6 +136,7 @@ beans = {
 
 == Changes
 
+2.4.2:: Make sure S3Object is closed after use. Adds method withObjects(Closure).
 2.4.1:: First public release
 
 
