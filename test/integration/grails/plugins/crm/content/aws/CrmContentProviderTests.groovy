@@ -33,6 +33,8 @@ class CrmContentProviderTests extends GroovyTestCase {
         crmContentService.createResource("Hello World!", "hello.txt", folder)
         assert crmContentService.getContentByPath("/hello/hello.txt") != null
         crmContentService.deleteFolder(folder)
+
+        Thread.sleep(3000) // Wait for eventual consistency.
     }
 
     void test2RepositorySizeZero() {
@@ -47,6 +49,8 @@ class CrmContentProviderTests extends GroovyTestCase {
         def folder = crmContentService.createFolder(null, "hello")
         crmContentService.createResource("Hello World!", "hello.txt", folder)
         assert crmContentService.getContentByPath("/hello/hello.txt") != null
+
+        Thread.sleep(3000) // Wait for eventual consistency.
     }
 
     void test4ReclaimSpace() {
@@ -56,11 +60,15 @@ class CrmContentProviderTests extends GroovyTestCase {
         assert crmContentService.getContentByPath("/hello/hello.txt") == null
         assert crmContentService.cleanup() == 12 // "Hello World!"
 
+        Thread.sleep(3000) // Wait for eventual consistency.
+
         def provider = crmContentProviderFactory.getProvider(URI.create("s3://1234567890"))
         assert provider != null
         assert provider.check({ true }) == 5 // "Test!"
 
         crmContentService.deleteFolder(folder)
+
+        Thread.sleep(3000) // Wait for eventual consistency.
 
         assert provider.check({ true }) == 0 // Should be zero if all test files are removed
     }
