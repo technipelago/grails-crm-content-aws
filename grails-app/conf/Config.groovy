@@ -1,4 +1,9 @@
 // configuration for plugin testing - will not be included in the plugin zip
+grails.plugin.awssdk.accessKey = 'ENTER YOUR ACCESS KEY HERE'
+grails.plugin.awssdk.secretKey = 'ENTER YOUR SECRET HERE'
+grails.plugin.awssdk.region = 'us-east-1'
+
+crm.content.s3.bucket = 'gr8crm-dev-1'
 
 log4j = {
     // Example of changing the log pattern for the default console
