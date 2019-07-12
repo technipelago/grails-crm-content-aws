@@ -21,6 +21,7 @@ grails.project.dependency.resolution = {
         mavenCentral()
     }
     dependencies {
+        compile('com.amazonaws:aws-java-sdk-s3:1.11.590')
         // See https://jira.grails.org/browse/GPHIB-30
         test("javax.validation:validation-api:1.1.0.Final") { export = false }
         test("org.hibernate:hibernate-validator:5.0.3.Final") { export = false }
@@ -38,8 +39,6 @@ grails.project.dependency.resolution = {
 
         test(":codenarc:0.27.0") { export = false }
         test(":code-coverage:2.0.3-3") { export = false }
-
-        compile "org.grails.plugins:aws-sdk:1.11.126"
 
         compile ":crm-content:2.4.6"
     }

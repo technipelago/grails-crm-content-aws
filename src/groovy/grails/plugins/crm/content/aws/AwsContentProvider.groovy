@@ -31,7 +31,7 @@ class AwsContentProvider implements CrmContentProvider {
 
     public static final String scheme = "s3"
 
-    def amazonWebService
+    def awsS3Client
     def grailsApplication
 
     @CompileStatic
@@ -64,11 +64,11 @@ class AwsContentProvider implements CrmContentProvider {
     }
 
     private S3Object getS3Object(String key) {
-        amazonWebService.s3.getObject(new GetObjectRequest(getBucketName(), key))
+        awsS3Client.getObject(new GetObjectRequest(getBucketName(), key))
     }
 
     private PutObjectResult putS3Object(String key, InputStream content, ObjectMetadata metadata) {
-        amazonWebService.s3.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
+        awsS3Client.putObject(new PutObjectRequest(getBucketName(), key, content, metadata))
     }
 
     @Override
@@ -164,7 +164,7 @@ class AwsContentProvider implements CrmContentProvider {
     boolean delete(URI uri) {
         final String key = uri.getHost()
 
-        amazonWebService.s3.deleteObject(new DeleteObjectRequest(getBucketName(), key))
+        awsS3Client.deleteObject(new DeleteObjectRequest(getBucketName(), key))
 
         return true
     }
@@ -211,7 +211,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     boolean exists(URI uri) {
         final String key = uri.getHost()
-        amazonWebService.s3.doesObjectExist(getBucketName(), key)
+        awsS3Client.doesObjectExist(getBucketName(), key)
     }
 
     /**
@@ -221,8 +221,8 @@ class AwsContentProvider implements CrmContentProvider {
      */
     void withObjects(
             @ClosureParams(value = SimpleType.class, options = "com.amazonaws.services.s3.model.S3ObjectSummary") Closure worker) {
-        for (S3ObjectSummary summary in S3Objects.withPrefix(amazonWebService.s3, getBucketName(), null)) {
-            def clone = worker.rehydrate(amazonWebService.s3, this, this)
+        for (S3ObjectSummary summary in S3Objects.withPrefix(awsS3Client, getBucketName(), null)) {
+            def clone = worker.rehydrate(awsS3Client, this, this)
             clone.resolveStrategy = Closure.DELEGATE_FIRST
             clone.call(summary)
         }
@@ -231,7 +231,7 @@ class AwsContentProvider implements CrmContentProvider {
     @Override
     long check(@ClosureParams(value = SimpleType.class, options = "java.net.URI") Closure<Boolean> worker) {
         long size = 0
-        final ObjectListing objectListing = amazonWebService.s3.listObjects(getBucketName())
+        final ObjectListing objectListing = awsS3Client.listObjects(getBucketName())
         for (S3ObjectSummary summary in objectListing.getObjectSummaries()) {
             long length = summary.size
             String key = summary.key
