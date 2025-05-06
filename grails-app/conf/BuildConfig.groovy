@@ -16,8 +16,8 @@ grails.project.dependency.resolution = {
     inherits "global"
     log "warn"
     repositories {
-        grailsCentral()
         mavenLocal()
+        grailsCentral()
         mavenCentral()
     }
     dependencies {
@@ -40,7 +40,7 @@ grails.project.dependency.resolution = {
         test(":codenarc:0.27.0") { export = false }
         test(":code-coverage:2.0.3-3") { export = false }
 
-        compile ":crm-content:2.4.6"
+        compile ":crm-content:2.5.1"
     }
 }
 
